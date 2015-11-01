@@ -8,6 +8,7 @@ import de.fhpotsdam.unfolding.utils.MapUtils;
  * 
  * This is the basic stub to start creating interactive maps.
  */
+
 public class HelloUCSDWorld extends PApplet {
 
 	UnfoldingMap map;
