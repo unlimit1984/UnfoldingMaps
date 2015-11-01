@@ -12,7 +12,7 @@ import processing.core.PGraphics;
  * @author Your name here
  *
  */
-public class CityMarker extends SimplePointMarker {
+public class CityMarker extends SimplePointMarker { 
 	
 	// The size of the triangle marker
 	// It's a good idea to use this variable in your draw method
