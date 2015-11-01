@@ -49,6 +49,7 @@ public class CityMarker extends SimplePointMarker {
 					x+TRI_SIZE*2, y+TRI_SIZE*2);
 		// Restore previous drawing style
 		pg.popStyle();
+		
 	}
 	
 	/* Local getters for some city properties.  You might not need these 
