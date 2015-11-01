@@ -60,7 +60,7 @@ public class CityMarker extends SimplePointMarker {
 	
 	public String getCountry()
 	{
-		return getStringProperty("country");  
+		return getStringProperty("country");
 	}
 	
 	public float getPopulation()
