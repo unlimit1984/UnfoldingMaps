@@ -18,7 +18,6 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		isOnLand = false;
 	}
 	
-
 	@Override
 	public void drawEarthquake(PGraphics pg, float x, float y) {
 		// Drawing a centered square for Ocean earthquakes
