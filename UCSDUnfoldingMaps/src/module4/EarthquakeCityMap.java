@@ -80,7 +80,7 @@ public class EarthquakeCityMap extends PApplet {
 		//earthquakesURL = "test2.atom";
 		
 		// WHEN TAKING THIS QUIZ: Uncomment the next line
-		//earthquakesURL = "quiz1.atom";
+		earthquakesURL = "quiz1.atom";
 		
 		
 		// (2) Reading in earthquake data and geometric properties
@@ -140,18 +140,48 @@ public class EarthquakeCityMap extends PApplet {
 		textAlign(LEFT, CENTER);
 		textSize(12);
 		text("Earthquake Key", 50, 75);
-		
+
+		//Треугольник-города
 		fill(color(255, 0, 0));
-		ellipse(50, 125, 15, 15);
-		fill(color(255, 255, 0));
-		ellipse(50, 175, 10, 10);
-		fill(color(0, 0, 255));
-		ellipse(50, 225, 5, 5);
+		triangle(50, 90+CityMarker.TRI_SIZE*2,
+				50+CityMarker.TRI_SIZE, 90,
+				50+CityMarker.TRI_SIZE*2, 90+CityMarker.TRI_SIZE*2);
+		
+		//Круг-земные
+		fill(color(255));
+		ellipse(50+CityMarker.TRI_SIZE, 115, 10, 10);
+		
+		//Квадрат-водные
+		fill(color(255));
+		rect(50, 135-CityMarker.TRI_SIZE, CityMarker.TRI_SIZE*2, CityMarker.TRI_SIZE*2);
+
+		fill(color(255,255,0));
+		ellipse(50+CityMarker.TRI_SIZE, 185, 10, 10);
+
+		fill(color(0,0,255));
+		ellipse(50+CityMarker.TRI_SIZE, 205, 10, 10);
+
+		fill(color(255,0,0));
+		ellipse(50+CityMarker.TRI_SIZE, 225, 10, 10);
+
+		fill(255);
+		ellipse(50+CityMarker.TRI_SIZE, 245, 10, 10);
+		fill(0);
+		line(50-CityMarker.TRI_SIZE, 245-CityMarker.TRI_SIZE*2, 50+CityMarker.TRI_SIZE*3, 245+CityMarker.TRI_SIZE*2);
+		line(50-CityMarker.TRI_SIZE, 245+CityMarker.TRI_SIZE*2, 50+CityMarker.TRI_SIZE*3, 245-CityMarker.TRI_SIZE*2);
+		
 		
 		fill(0, 0, 0);
-		text("5.0+ Magnitude", 75, 125);
-		text("4.0+ Magnitude", 75, 175);
-		text("Below 4.0", 75, 225);
+		text("City Marker", 75, 95);
+		text("Land Quake", 75, 115);
+		text("Ocean Quake", 75, 135);
+		text("Size ~ Magnitude", 50, 155);
+
+		text("Shallow", 75, 185);
+		text("Intermediate", 75, 205);
+		text("Deep", 75, 225);
+		text("Last Day", 75, 245);
+		
 	}
 
 	
@@ -163,8 +193,12 @@ public class EarthquakeCityMap extends PApplet {
 	private boolean isLand(PointFeature earthquake) {
 		
 		// IMPLEMENT THIS: loop over all countries to check if location is in any of them
-		
 		// TODO: Implement this method using the helper method isInCountry
+		for(Marker countryMarker : countryMarkers){
+			if(isInCountry(earthquake, countryMarker)){
+				return true;
+			}
+		}
 		
 		// not inside any country
 		return false;
@@ -179,6 +213,30 @@ public class EarthquakeCityMap extends PApplet {
 	private void printQuakes() 
 	{
 		// TODO: Implement this method
+		for(Marker countryMarker : countryMarkers){
+			int num=0;
+			String c = (String)countryMarker.getProperty("name");
+			
+			for(Marker m : quakeMarkers){
+				if(m instanceof LandQuakeMarker){
+					if(((LandQuakeMarker)m).getCountry().equals(c)){
+						num++;
+					}
+				}
+			}
+			if(num>0){
+				System.out.println(c + " : " + num);
+			}
+		}
+		int num=0;
+		for(Marker m : quakeMarkers){
+			if(m instanceof OceanQuakeMarker){
+				num++;
+			}
+		}
+		if(num>0){
+			System.out.println("Ocean quakes : " + num);
+		}
 	}
 	
 	

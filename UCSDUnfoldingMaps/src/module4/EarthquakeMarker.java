@@ -65,18 +65,42 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 		drawEarthquake(pg, x, y);
 		
 		// OPTIONAL TODO: draw X over marker if within past day		
-		
+		drawX(pg, x, y);
 		// reset to previous styling
 		pg.popStyle();
 		
 	}
 	
+
+
+	private void drawX(PGraphics pg, float x, float y) {
+		if(getAge().equals("Past Day") || getAge().equals("Past Hour")){		
+			pg.fill(0);
+			pg.line(x-CityMarker.TRI_SIZE*2, y-CityMarker.TRI_SIZE*2, x+CityMarker.TRI_SIZE*2, y+CityMarker.TRI_SIZE*2);
+			pg.line(x-CityMarker.TRI_SIZE*2, y+CityMarker.TRI_SIZE*2, x+CityMarker.TRI_SIZE*2, y-CityMarker.TRI_SIZE*2);
+		}
+	}
+
+
 	// determine color of marker from depth
 	// We suggest: Deep = red, intermediate = blue, shallow = yellow
 	// But this is up to you, of course.
 	// You might find the getters below helpful.
 	private void colorDetermine(PGraphics pg) {
 		//TODO: Implement this method
+		int col = pg.color(150);
+		float depth = getDepth();
+		if(0f<=depth && depth<=70f){
+			col = pg.color(255,255,0);
+		}
+		else if(70f<depth && depth<=300f){
+			col = pg.color(0,0,255);
+		}
+		else if(300f<depth && depth<=700f){
+			col = pg.color(255,0,0);
+		}
+		
+		pg.fill(col);
 	}
 	
 	
@@ -100,7 +124,9 @@ public abstract class EarthquakeMarker extends SimplePointMarker
 	public float getRadius() {
 		return Float.parseFloat(getProperty("radius").toString());
 	}
-	
+	public String getAge(){
+		return (String)getProperty("age");
+	}
 	public boolean isOnLand()
 	{
 		return isOnLand;
