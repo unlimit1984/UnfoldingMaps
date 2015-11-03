@@ -146,6 +146,15 @@ public class EarthquakeCityMap extends PApplet {
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
 		// TODO: Implement this method
+		if(lastSelected == null){
+			for(Marker marker : markers){
+				if(marker.isInside(map, this.mouseX, this.mouseY)){
+					lastSelected = (CommonMarker)marker;
+					marker.setSelected(true);
+					break;
+				}
+			}
+		}
 	}
 	
 	/** The event handler for mouse clicks
@@ -159,9 +168,61 @@ public class EarthquakeCityMap extends PApplet {
 		// TODO: Implement this method
 		// Hint: You probably want a helper method or two to keep this code
 		// from getting too long/disorganized
+		
+		if(lastClicked != null){//если нажато
+			//вернуть все
+			lastClicked.setClicked(false);
+			lastClicked = null;
+			unhideMarkers();//показать все
+		}
+		else{//если не нажато
+			
+			if(lastSelected!=null){//если выделен город или землетрясение
+				hideMarkers();//спрятать все
+				lastClicked = lastSelected;//сделать кликнутым
+				lastClicked.setClicked(true);
+				lastClicked.setHidden(false);//пусть рисуется
+				
+				if(lastClicked.getClass() == CityMarker.class){//Если город
+					unhideThreatMarkers(lastClicked,quakeMarkers);//показываем город и связанные землетрясения 
+				}
+				else{//если землетрясение
+					unhideThreatMarkers(lastClicked,cityMarkers);//показываем землетрясение и связанные города
+					if(lastClicked.getClass() == OceanQuakeMarker.class){
+						List<Marker> cities = new ArrayList<>();
+						double threatDistance = ((EarthquakeMarker)lastClicked).threatCircle();
+						for(Marker marker : cityMarkers) {
+							if(marker.getDistanceTo(lastClicked.getLocation()) <= threatDistance){
+								cities.add(marker);
+							}
+						}
+						
+					}
+				}
+			}
+		}
 	}
 	
 	
+	private void unhideThreatMarkers(CommonMarker point, List<Marker> markers) {
+		if(point.getClass() == CityMarker.class){//Если город
+			for(Marker marker: markers){//перебираем землетрясения
+				double threatDistance = ((EarthquakeMarker)marker).threatCircle();
+				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+					marker.setHidden(false);
+				}
+			}
+		}
+		else{//Если землетрясение
+			double threatDistance = ((EarthquakeMarker)point).threatCircle();
+			for(Marker marker: markers){
+				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+					marker.setHidden(false);
+				}
+			}
+		}
+	}
+
 	// loop over and unhide all markers
 	private void unhideMarkers() {
 		for(Marker marker : quakeMarkers) {
@@ -170,6 +231,15 @@ public class EarthquakeCityMap extends PApplet {
 			
 		for(Marker marker : cityMarkers) {
 			marker.setHidden(false);
+		}
+	}
+	private void hideMarkers() {
+		for(Marker marker : quakeMarkers) {
+			marker.setHidden(true);
+		}
+			
+		for(Marker marker : cityMarkers) {
+			marker.setHidden(true);
 		}
 	}
 	
