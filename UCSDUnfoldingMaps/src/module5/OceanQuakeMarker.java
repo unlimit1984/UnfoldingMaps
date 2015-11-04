@@ -18,10 +18,10 @@ import processing.core.PGraphics;
 public class OceanQuakeMarker extends EarthquakeMarker {
 	
 	UnfoldingMap map = null;
-	List<CityMarker> threatCityMarkers = new ArrayList<>();
+	List<Marker> threatCities = new ArrayList<>();
 	
-	public void setThreatCityMarkers(List<CityMarker> threatCityMarkers) {
-		this.threatCityMarkers = threatCityMarkers;
+	public List<Marker> getThreatCities() {
+		return threatCities;
 	}
 
 	public OceanQuakeMarker(PointFeature quake) {
@@ -31,14 +31,21 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		isOnLand = false;
 	}
 	
+	public OceanQuakeMarker(PointFeature feature, UnfoldingMap map) {
+		this(feature);
+		this.map = map;
+	}
+
 	/** Draw the earthquake as a square */
 	@Override
 	public void drawEarthquake(PGraphics pg, float x, float y) {
 		pg.rect(x-radius, y-radius, 2*radius, 2*radius);
-		//pg.line()
 		if(this.getClicked()){
-			ScreenPosition sp = new ScreenPosition(x, y);// this.getScreenPosition(pg.get);
-			//this.
+			for(Marker city: threatCities){
+				float x2 = ((CityMarker)city).getScreenPosition(map).x;
+				float y2 = ((CityMarker)city).getScreenPosition(map).y;
+				pg.line(x, y, x2, y2);
+			}
 		}
 	}
 	

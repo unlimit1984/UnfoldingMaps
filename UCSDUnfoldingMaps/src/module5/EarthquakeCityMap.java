@@ -100,7 +100,7 @@ public class EarthquakeCityMap extends PApplet {
 		  }
 		  // OceanQuakes
 		  else {
-		    quakeMarkers.add(new OceanQuakeMarker(feature));
+		    quakeMarkers.add(new OceanQuakeMarker(feature,map));
 		  }
 	    }
 
@@ -172,6 +172,9 @@ public class EarthquakeCityMap extends PApplet {
 		if(lastClicked != null){//если нажато
 			//вернуть все
 			lastClicked.setClicked(false);
+			if(lastClicked.getClass() == OceanQuakeMarker.class){//удаляем рисование линий к близким городам от водных землетрясений
+				((OceanQuakeMarker)lastClicked).getThreatCities().clear();
+			}
 			lastClicked = null;
 			unhideMarkers();//показать все
 		}
@@ -188,12 +191,13 @@ public class EarthquakeCityMap extends PApplet {
 				}
 				else{//если землетрясение
 					unhideThreatMarkers(lastClicked,cityMarkers);//показываем землетрясение и связанные города
+					//Дополнительно рисуем линии от водных землетрясений к близким городам
 					if(lastClicked.getClass() == OceanQuakeMarker.class){
-						List<Marker> cities = new ArrayList<>();
 						double threatDistance = ((EarthquakeMarker)lastClicked).threatCircle();
+						((OceanQuakeMarker)lastClicked).getThreatCities().clear();
 						for(Marker marker : cityMarkers) {
 							if(marker.getDistanceTo(lastClicked.getLocation()) <= threatDistance){
-								cities.add(marker);
+								((OceanQuakeMarker)lastClicked).getThreatCities().add(marker);
 							}
 						}
 						
@@ -209,7 +213,7 @@ public class EarthquakeCityMap extends PApplet {
 			for(Marker marker: markers){//перебираем землетрясения
 				double threatDistance = ((EarthquakeMarker)marker).threatCircle();
 				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
-					marker.setHidden(false);
+					marker.setHidden(false);//показываем только опасные близкие землетрясения
 				}
 			}
 		}
@@ -217,7 +221,7 @@ public class EarthquakeCityMap extends PApplet {
 			double threatDistance = ((EarthquakeMarker)point).threatCircle();
 			for(Marker marker: markers){
 				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
-					marker.setHidden(false);
+					marker.setHidden(false);//показываем только близкие города
 				}
 			}
 		}
@@ -386,3 +390,32 @@ public class EarthquakeCityMap extends PApplet {
 	}
 
 }
+/*
+Мое:
+Hello Christine, Mia and Leo.
+For implementation selectMarkerIfHover method I go through markers on the map using for-loop and if the city or quake is in current location I save this marker in variable lastSelected and select this marker by calling the setSelected(true) method. After finding the first marker under cursor I "break" loop to make sure I don't select more than one marker.
+
+To draw a title for any hovered point I implemented showTitle() in CityMarker and EarthquakeMarker classes.
+
+Implementation of mouseClicked was the first sophisticated assignment for me in this module. I realized two additional helper methods:  1)hideMarkers() that similar to unhideMarkers() but works in reverse mode. 2)unhideThreatMarkers() - this method makes hidden OFF showing earthquakes and cities in Threat Mode. And I was enforced to code for-loop operator twice: one for quakes and the second for cities, because the user can check two option: city or quake.
+
+I tried to solve option task, but I'm not sure that it works correctly. I'v made a second constructor for OceanQuakeMarker for getting parameter UnfoldingMap and added a list of CityMarker as a field in the OceanQuakeMarker class. Also I modified some code in mouseClicked() method to set the city list in OceanQuakeMarker instance in Threat mode if user clicks on Ocean quake marker. Finally I added drawing lines in drawEarthquake() method in OceanQuakeMarker class. Before I check if the marker getClicked(). Also we need to clear and filling city list in mouseClicked() method because we have to draw lines only when the Ocean Quake has cities in threated zone.
+
+Thank you very much for reading my bad English.
+
+Их описание:
+Here's how our code handled mouse clicks:
+
+When the user clicks the mouse, the mouseClicked code in EarthquakeCityMap is called by Java. This method first checks the lastClicked variable. If it is null, meaning a city is already shown as "clicked", it sets lastClicked to null and unhides all the cities and earthquakes.
+
+Otherwise, it relies on two helper methods: checkEarthquakesForClick and checkCitiesForClick.
+
+checkEarthquakesForClick first checks lastClicked, and aborts if it is not null (just in case). Then it loops through all the earthquakes to see if one has been clicked on. If it finds one, it loops through all of the earthquake markers and sets all but the clicked earthquake to hidden. Then it loops through the city markers and sets all of the city markers outside of the clicked earthquake's threat circle to be hidden. It then returns so that it does not check anymore earthquakes.
+
+checkCitiesForClick first checks lastClicked, and aborts if it is not null (which could mean an earthquake has already been found as clicked). Then it loops through all the cities to see if one has been clicked on. If it finds one, it loops through all of the city markers and sets all but the clicked city to hidden. Then it loops through the earthquake markers and sets all of the earthquake markers for which the city is outside of the threat circle to be hidden. It then returns so that it does not check anymore cities.
+
+
+
+
+ */
+  
