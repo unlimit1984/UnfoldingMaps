@@ -17,6 +17,7 @@ import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import parsing.ParseFeed;
 import processing.core.PApplet;
+import processing.core.PImage;
 
 /** EarthquakeCityMap
  * An application with an interactive map displaying earthquake data.
@@ -41,7 +42,9 @@ public class EarthquakeCityMap extends PApplet {
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
 	
-	
+	PImage city_img = loadImage("city-icon.png");
+	PImage quake = loadImage("quake.png");
+	PImage tsunami = loadImage("tsunami.png");
 
 	//feed with magnitude 2.5+ Earthquakes
 	private String earthquakesURL = "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.atom";
@@ -97,7 +100,8 @@ public class EarthquakeCityMap extends PApplet {
 		List<Feature> cities = GeoJSONReader.loadData(this, cityFile);
 		cityMarkers = new ArrayList<Marker>();
 		for(Feature city : cities) {
-		  cityMarkers.add(new CityMarker(city));
+		  //cityMarkers.add(new CityMarker(city));
+			cityMarkers.add(new CityMarker(city, city_img));
 		}
 	    
 		//     STEP 3: read in earthquake RSS feed
@@ -107,16 +111,17 @@ public class EarthquakeCityMap extends PApplet {
 	    for(PointFeature feature : earthquakes) {
 		  //check if LandQuake
 		  if(isLand(feature)) {
-		    quakeMarkers.add(new LandQuakeMarker(feature));
+		    quakeMarkers.add(new LandQuakeMarker(feature, quake));
 		  }
 		  // OceanQuakes
 		  else {
-		    quakeMarkers.add(new OceanQuakeMarker(feature));
+		    quakeMarkers.add(new OceanQuakeMarker(feature, tsunami));
 		  }
 	    }
 
 	    // could be used for debugging
-	    printQuakes();
+	    //printQuakes();
+	    sortAndPrint(50);
 	 		
 	    // (3) Add markers to map
 	    //     NOTE: Country markers are not added to the map.  They are used
@@ -184,14 +189,15 @@ public class EarthquakeCityMap extends PApplet {
 	@Override
 	public void mouseClicked()
 	{
-		if (lastClicked != null) {
+		if (lastClicked != null) {//Если до этого был выделен маркер
+			lastClicked.setClicked(false);
 			unhideMarkers();
 			lastClicked = null;
 		}
 		else if (lastClicked == null) 
 		{
 			checkEarthquakesForClick();
-			if (lastClicked == null) {
+			if (lastClicked == null) {//если не нашли маркер среди землетрясений, поищем среди городов
 				checkCitiesForClick();
 			}
 		}
@@ -206,17 +212,21 @@ public class EarthquakeCityMap extends PApplet {
 		for (Marker marker : cityMarkers) {
 			if (!marker.isHidden() && marker.isInside(map, mouseX, mouseY)) {
 				lastClicked = (CommonMarker)marker;
+				lastClicked.setClicked(true);
 				// Hide all the other earthquakes and hide
 				for (Marker mhide : cityMarkers) {
 					if (mhide != lastClicked) {
 						mhide.setHidden(true);
 					}
 				}
+				((CityMarker)lastClicked).getThreatQuakes().clear();
 				for (Marker mhide : quakeMarkers) {
 					EarthquakeMarker quakeMarker = (EarthquakeMarker)mhide;
-					if (quakeMarker.getDistanceTo(marker.getLocation()) 
-							> quakeMarker.threatCircle()) {
+					if (quakeMarker.getDistanceTo(marker.getLocation()) > quakeMarker.threatCircle()) {
 						quakeMarker.setHidden(true);
+					}
+					else{
+						((CityMarker)lastClicked).getThreatQuakes().add(mhide);
 					}
 				}
 				return;
@@ -234,6 +244,7 @@ public class EarthquakeCityMap extends PApplet {
 			EarthquakeMarker marker = (EarthquakeMarker)m;
 			if (!marker.isHidden() && marker.isInside(map, mouseX, mouseY)) {
 				lastClicked = marker;
+				lastClicked.setClicked(true);
 				// Hide all the other earthquakes and hide
 				for (Marker mhide : quakeMarkers) {
 					if (mhide != lastClicked) {
@@ -280,9 +291,11 @@ public class EarthquakeCityMap extends PApplet {
 		fill(150, 30, 30);
 		int tri_xbase = xbase + 35;
 		int tri_ybase = ybase + 50;
-		triangle(tri_xbase, tri_ybase-CityMarker.TRI_SIZE, tri_xbase-CityMarker.TRI_SIZE, 
-				tri_ybase+CityMarker.TRI_SIZE, tri_xbase+CityMarker.TRI_SIZE, 
-				tri_ybase+CityMarker.TRI_SIZE);
+		
+//		triangle(tri_xbase, tri_ybase-CityMarker.TRI_SIZE, tri_xbase-CityMarker.TRI_SIZE, 
+//				tri_ybase+CityMarker.TRI_SIZE, tri_xbase+CityMarker.TRI_SIZE, 
+//				tri_ybase+CityMarker.TRI_SIZE);
+		image(city_img, tri_xbase-city_img.width/4,tri_ybase-city_img.height/4,city_img.width/2,city_img.height/2);
 
 		fill(0, 0, 0);
 		textAlign(LEFT, CENTER);
@@ -292,12 +305,15 @@ public class EarthquakeCityMap extends PApplet {
 		text("Ocean Quake", xbase+50, ybase+90);
 		text("Size ~ Magnitude", xbase+25, ybase+110);
 		
-		fill(255, 255, 255);
-		ellipse(xbase+35, 
-				ybase+70, 
-				10, 
-				10);
-		rect(xbase+35-5, ybase+90-5, 10, 10);
+//		fill(255, 255, 255);
+//		ellipse(xbase+35, 
+//				ybase+70, 
+//				10, 
+//				10);
+		image(quake, tri_xbase-quake.width/8,tri_ybase+20-quake.height/8,quake.width/4,quake.height/4);
+		
+		//rect(xbase+35-5, ybase+90-5, 10, 10);
+		image(tsunami, tri_xbase-tsunami.width/4,tri_ybase+40-tsunami.height/4,tsunami.width/2,tsunami.height/2);
 		
 		fill(color(255, 255, 0));
 		ellipse(xbase+35, ybase+140, 12, 12);
@@ -373,6 +389,14 @@ public class EarthquakeCityMap extends PApplet {
 		}
 		System.out.println("OCEAN QUAKES: " + totalWaterQuakes);
 	}
+	private void sortAndPrint(int numToPrint){
+		Object[] objs = quakeMarkers.toArray();
+		Arrays.sort(objs);
+		
+		for(int i=0; i<numToPrint && i<objs.length; i++){
+			System.out.println(objs[i]);
+		}
+	}
 	
 	
 	
@@ -409,5 +433,13 @@ public class EarthquakeCityMap extends PApplet {
 		}
 		return false;
 	}
-
 }
+//
+/*
+ First, In my solution when I'm looking for clicked city or quake I don't use isInside method, because we have already know this marker in stored variable lastSelected. So we just need to compare lastSelected with null. And if lastSelected isn't null we just make lastClicked = lastSelected. 
+And the second, i have made a helper method hideMarkers, that hide all markers on the map.
+
+At first I hide all markers and than I'm looking for clicked marker and threated zone. And it is clear logic for me, but I need go through for-loop markers twice .
+
+Your solution is more optimized, because you go only once, but I need more time to understand your code.
+*/

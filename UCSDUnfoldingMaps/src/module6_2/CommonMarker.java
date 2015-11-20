@@ -1,10 +1,9 @@
-package module6;
+package module6_2;
 
 
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import processing.core.PGraphics;
-import processing.core.PImage;
 
 /** Implements a common marker for cities and earthquakes on an earthquake map
  * 
@@ -16,22 +15,12 @@ public abstract class CommonMarker extends SimplePointMarker {
 	// Records whether this marker has been clicked (most recently)
 	protected boolean clicked = false;
 	
-	protected PImage img;
-	
 	public CommonMarker(Location location) {
 		super(location);
-	}
-	public CommonMarker(Location location, PImage img) {
-		super(location);
-		this.img = img;
 	}
 	
 	public CommonMarker(Location location, java.util.HashMap<java.lang.String,java.lang.Object> properties) {
 		super(location, properties);
-	}
-	public CommonMarker(Location location, java.util.HashMap<java.lang.String,java.lang.Object> properties, PImage img) {
-		super(location, properties);
-		this.img = img;
 	}
 	
 	// Getter method for clicked field

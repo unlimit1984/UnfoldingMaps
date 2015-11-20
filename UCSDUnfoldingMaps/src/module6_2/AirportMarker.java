@@ -1,4 +1,4 @@
-package module6;
+package module6_2;
 
 import java.util.List;
 
@@ -7,40 +7,21 @@ import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.marker.SimpleLinesMarker;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import processing.core.PImage;
 
-/** 
- * A class to represent AirportMarkers on a world map.
- *   
- * @author Adam Setters and the UC San Diego Intermediate Software Development
- * MOOC team
- *
- */
 public class AirportMarker extends CommonMarker {
 	public static List<SimpleLinesMarker> routes;
-	private static PImage img; 
-	
 	
 	public AirportMarker(Feature city) {
 		super(((PointFeature)city).getLocation(), city.getProperties());
 	
-	}
-	public AirportMarker(Feature city, PImage img) {
-		super(((PointFeature)city).getLocation(), city.getProperties());
-		this.img = img;
 	}
 	
 	@Override
 	public void drawMarker(PGraphics pg, float x, float y) {
 		pg.pushStyle();
 		
-		if(img!=null){
-			//pg.image(pg, x, y);
-		}
-		else{
-			pg.fill(150);
-			pg.ellipse(x, y, 15, 15);			
-		}
+		pg.fill(150);
+		pg.ellipse(x, y, 15, 15);
 		
 		pg.popStyle();
 	}

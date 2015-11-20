@@ -1,18 +1,20 @@
-package module6;
+package module6_2;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import processing.core.PConstants;
-import processing.core.PGraphics;
-import processing.core.PImage;
+import com.sun.jndi.toolkit.ctx.PartialCompositeContext;
+
 import de.fhpotsdam.unfolding.data.Feature;
 import de.fhpotsdam.unfolding.data.PointFeature;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.Marker;
+import processing.core.PConstants;
+import processing.core.PGraphics;
 
 /** Implements a visual marker for cities on an earthquake map
  * 
@@ -31,21 +33,13 @@ public class CityMarker extends CommonMarker {
 
 	public CityMarker(Location location) {
 		super(location);
-	}	
-	public CityMarker(Location location, PImage img) {
-		super(location,img);
-	}	
+	}
+	
 	
 	public CityMarker(Feature city) {
 		super(((PointFeature)city).getLocation(), city.getProperties());
 		// Cities have properties: "name" (city name), "country" (country name)
 		// and "population" (population, in millions)
-	}
-	public CityMarker(Feature city, PImage img) {
-		super(((PointFeature)city).getLocation(), city.getProperties(), img);
-		// Cities have properties: "name" (city name), "country" (country name)
-		// and "population" (population, in millions)
-
 	}
 	
 	
@@ -65,31 +59,11 @@ public class CityMarker extends CommonMarker {
 		pg.pushStyle();
 		
 		// IMPLEMENT: drawing triangle for each city
-		if(img!=null){
-			//pg.image(img, x, y);
-			pg.image(img, x-img.width/4,y-img.height/4,img.width/2,img.height/2);
-		}
-		else{
-			pg.fill(150, 30, 30);
-			pg.triangle(x, y-TRI_SIZE, x-TRI_SIZE, y+TRI_SIZE, x+TRI_SIZE, y+TRI_SIZE);
-		}
+		pg.fill(150, 30, 30);
+		pg.triangle(x, y-TRI_SIZE, x-TRI_SIZE, y+TRI_SIZE, x+TRI_SIZE, y+TRI_SIZE);
 		
 		// Restore previous drawing style
-		pg.popStyle();
-		
-		if(clicked){			
-			pg.fill(255, 250, 240);
-			pg.rect(5, 5, 400, 50);
-			pg.fill(0);
-			pg.textAlign(PConstants.LEFT, PConstants.CENTER);
-			pg.textSize(12);
-			pg.text("Count Quakes: "+threatQuakes.size(), 10, 15);
-			pg.text("Average Magnitude: "+getMiddleMagnitude(), 10, 30);
-			pg.text("Last: "+getRecentQuake(), 10, 45);
-
-
-
-		}
+		pg.popStyle();		
 	}
 
 	private String getMiddleMagnitude(){

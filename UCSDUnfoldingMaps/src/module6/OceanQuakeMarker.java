@@ -2,6 +2,7 @@ package module6;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
+import processing.core.PImage;
 
 /** Implements a visual marker for ocean earthquakes on an earthquake map
  * 
@@ -16,6 +17,10 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		// setting field in earthquake marker
 		isOnLand = false;
 	}
+	public OceanQuakeMarker(PointFeature quake, PImage img) {
+		super(quake, img);
+		isOnLand = false;
+	}
 	
 
 	@Override
@@ -26,7 +31,13 @@ public class OceanQuakeMarker extends EarthquakeMarker {
 		// Simply draw a centered square.
 		// HINT: Notice the radius variable in the EarthquakeMarker class
 		// and how it is set in the EarthquakeMarker constructor
-		pg.rect(x-radius, y-radius, 2*radius, 2*radius);
+		if(img!=null){
+			pg.image(img, x-img.width/4,y-img.height/4,img.width/2,img.height/2);
+		}
+		else{
+			pg.rect(x-radius, y-radius, 2*radius, 2*radius);
+		}
+
 	}
 	
 

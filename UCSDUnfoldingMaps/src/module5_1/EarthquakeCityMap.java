@@ -100,7 +100,7 @@ public class EarthquakeCityMap extends PApplet {
 		  }
 		  // OceanQuakes
 		  else {
-		    quakeMarkers.add(new OceanQuakeMarker(feature,map));
+		    quakeMarkers.add(new OceanQuakeMarker(feature));
 		  }
 	    }
 
@@ -170,11 +170,6 @@ public class EarthquakeCityMap extends PApplet {
 		// from getting too long/disorganized
 		
 		if(lastClicked != null){//если нажато
-			//вернуть все
-			lastClicked.setClicked(false);
-			if(lastClicked.getClass() == OceanQuakeMarker.class){//удаляем рисование линий к близким городам от водных землетрясений
-				((OceanQuakeMarker)lastClicked).getThreatCities().clear();
-			}
 			lastClicked = null;
 			unhideMarkers();//показать все
 		}
@@ -183,49 +178,55 @@ public class EarthquakeCityMap extends PApplet {
 			if(lastSelected!=null){//если выделен город или землетрясение
 				hideMarkers();//спрятать все
 				lastClicked = lastSelected;//сделать кликнутым
-				lastClicked.setClicked(true);
 				lastClicked.setHidden(false);//пусть рисуется
 				
 				if(lastClicked.getClass() == CityMarker.class){//Если город
-					unhideThreatMarkers(lastClicked,quakeMarkers);//показываем город и связанные землетрясения 
+					unhideThreatCityMarkers(lastClicked,quakeMarkers);
+					//unhideThreatMarkers(lastClicked,quakeMarkers);//показываем город и связанные землетрясения 
 				}
 				else{//если землетрясение
-					unhideThreatMarkers(lastClicked,cityMarkers);//показываем землетрясение и связанные города
-					//Дополнительно рисуем линии от водных землетрясений к близким городам
-					if(lastClicked.getClass() == OceanQuakeMarker.class){
-						double threatDistance = ((EarthquakeMarker)lastClicked).threatCircle();
-						((OceanQuakeMarker)lastClicked).getThreatCities().clear();
-						for(Marker marker : cityMarkers) {
-							if(marker.getDistanceTo(lastClicked.getLocation()) <= threatDistance){
-								((OceanQuakeMarker)lastClicked).getThreatCities().add(marker);
-							}
-						}
-						
-					}
+					unhideThreatQuakeMarkers(lastClicked,cityMarkers);
+					//unhideThreatMarkers(lastClicked,cityMarkers);//показываем землетрясение и связанные города
 				}
 			}
 		}
 	}
 	
-	
-	private void unhideThreatMarkers(CommonMarker point, List<Marker> markers) {
-		if(point.getClass() == CityMarker.class){//Если город
-			for(Marker marker: markers){//перебираем землетрясения
-				double threatDistance = ((EarthquakeMarker)marker).threatCircle();
-				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
-					marker.setHidden(false);//показываем только опасные близкие землетрясения
-				}
-			}
-		}
-		else{//Если землетрясение
-			double threatDistance = ((EarthquakeMarker)point).threatCircle();
-			for(Marker marker: markers){
-				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
-					marker.setHidden(false);//показываем только близкие города
-				}
+	private void unhideThreatCityMarkers(CommonMarker point, List<Marker> quakeMarkers) {
+		for(Marker marker: quakeMarkers){//перебираем землетрясения
+			double threatDistance = ((EarthquakeMarker)marker).threatCircle();
+			if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+				marker.setHidden(false);//показываем только опасные близкие землетрясения
 			}
 		}
 	}
+	
+	private void unhideThreatQuakeMarkers(CommonMarker point, List<Marker> cityMarkers) {
+		double threatDistance = ((EarthquakeMarker)point).threatCircle();
+		for(Marker marker: cityMarkers){//перебираем города
+			if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+				marker.setHidden(false);//показываем только близкие города
+			}
+		}
+	}
+//	private void unhideThreatMarkers(CommonMarker point, List<Marker> markers) {
+//		if(point.getClass() == CityMarker.class){//Если город
+//			for(Marker marker: markers){//перебираем землетрясения
+//				double threatDistance = ((EarthquakeMarker)marker).threatCircle();
+//				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+//					marker.setHidden(false);//показываем только опасные близкие землетрясения
+//				}
+//			}
+//		}
+//		else{//Если землетрясение
+//			double threatDistance = ((EarthquakeMarker)point).threatCircle();
+//			for(Marker marker: markers){
+//				if(marker.getDistanceTo(point.getLocation()) <= threatDistance){
+//					marker.setHidden(false);//показываем только близкие города
+//				}
+//			}
+//		}
+//	}
 
 	// loop over and unhide all markers
 	private void unhideMarkers() {

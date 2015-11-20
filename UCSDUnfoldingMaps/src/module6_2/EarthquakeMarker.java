@@ -1,9 +1,8 @@
-package module6;
+package module6_2;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PConstants;
 import processing.core.PGraphics;
-import processing.core.PImage;
 
 /** Implements a visual marker for earthquakes on an earthquake map
  * 
@@ -45,24 +44,15 @@ public abstract class EarthquakeMarker extends CommonMarker implements Comparabl
 		
 	
 	// constructor
-	private void constructorMethod(PointFeature feature){
+	public EarthquakeMarker (PointFeature feature) 
+	{
+		super(feature.getLocation());
 		// Add a radius property and then set the properties
 		java.util.HashMap<String, Object> properties = feature.getProperties();
 		float magnitude = Float.parseFloat(properties.get("magnitude").toString());
 		properties.put("radius", 2*magnitude );
 		setProperties(properties);
 		this.radius = 1.75f*getMagnitude();
-		
-	}
-	public EarthquakeMarker (PointFeature feature) 
-	{
-		super(feature.getLocation());
-		constructorMethod(feature);
-	}
-	public EarthquakeMarker (PointFeature feature, PImage img) 
-	{
-		super(feature.getLocation(),img);
-		constructorMethod(feature);
 	}
 	
 	// TODO: Add the method:

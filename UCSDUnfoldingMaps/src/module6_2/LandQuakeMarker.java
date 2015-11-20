@@ -1,8 +1,7 @@
-package module6;
+package module6_2;
 
 import de.fhpotsdam.unfolding.data.PointFeature;
 import processing.core.PGraphics;
-import processing.core.PImage;
 
 /** Implements a visual marker for land earthquakes on an earthquake map
  * 
@@ -20,10 +19,6 @@ public class LandQuakeMarker extends EarthquakeMarker {
 		// setting field in earthquake marker
 		isOnLand = true;
 	}
-	public LandQuakeMarker(PointFeature quake, PImage img) {
-		super(quake, img);
-		isOnLand = true;
-	}
 
 
 	@Override
@@ -34,12 +29,7 @@ public class LandQuakeMarker extends EarthquakeMarker {
 		// Simply draw a centered square.
 		// HINT: Notice the radius variable in the EarthquakeMarker class
 		// and how it is set in the EarthquakeMarker constructor
-		if(img!=null){
-			pg.image(img, x-img.width/8,y-img.height/8,img.width/4,img.height/4);
-		}
-		else{
-			pg.ellipse(x, y, 2*radius, 2*radius);
-		}
+		pg.ellipse(x, y, 2*radius, 2*radius);
 		
 	}
 	
